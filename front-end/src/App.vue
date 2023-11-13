@@ -78,6 +78,7 @@ export default {
       {
         if (operator==='%'){
           this.current_input+="/100";
+          this.evaluateExpression();
         }
         else
           this.current_input+=operator;
@@ -99,6 +100,7 @@ export default {
     handleNumberButton(event){
       const num = event.target.textContent;
       this.current_input+=num;
+      this.evaluateExpression();
     },
     sqrt(){
       if(this.current_input===''){
@@ -115,6 +117,7 @@ export default {
       {
         this.current_input+="^0.5";
       }
+      this.evaluateExpression();
     },
     square(){
       if(this.current_input===''){
@@ -131,6 +134,8 @@ export default {
       {
         this.current_input+="^2";
       }
+      this.evaluateExpression();
+
     },
     inverse(){
       if(this.current_input===''){
@@ -146,19 +151,33 @@ export default {
           last_str+="1/"
           myinput=myinput.slice(-(myinput.length-i-1))
           this.current_input=last_str+myinput;
+          this.evaluateExpression();
           return;
         }
       }
       this.current_input="1/"+this.current_input;
+      this.evaluateExpression();
       return;
     },
     deleteLast(){
       if(this.current_input!=''){
         this.current_input=this.current_input.slice(0,-1);
       }
+      if (this.current_input==''){
+        this.computed_result='';
+        return;
+      }
+      const last = this.current_input.slice(-1);
+      if (!this.isOperator(last)){
+        this.evaluateExpression();
+      }
+      else
+      {
+        // nothing
+      }
       /**
        * if last character is not operator, send expression,
-       *  else send without last character
+       *  else do nothing
        */
     },
     isOperator(ch){
@@ -172,6 +191,8 @@ export default {
     },
     handleEqualsClick(){
       // already sent
+      if(this.isOperator(this.current_input.slice(-1)))
+        this.computed_result='E';
     },
     handlePlusMinus(){
       if(this.current_input===''){
@@ -180,6 +201,7 @@ export default {
       }
       if (this.current_input==='-'){
         this.current_input='';
+        return;
       }
       let myinput = this.current_input;
       for (let i=myinput.length-1;i>=0;i--){
@@ -188,20 +210,35 @@ export default {
           if(curr==='+'){
             //myinput[i]='-';
             this.current_input=myinput.slice(0, i) + "-" + myinput.slice(i+1);
-            return;
           }
           else if (curr==='-'){
            // myinput[i]='+';
             this.current_input=myinput.slice(0, i) + "+" + myinput.slice(i+1);
-            return;
           }
           else
           {
-            return;
           }
+          this.evaluateExpression();
+          return;
         }
       }
       this.current_input="-"+this.current_input;
+      this.evaluateExpression();
+      return;
+    },
+    evaluateExpression(){
+      fetch(`http://localhost:8081/calculate/?expression=${encodeURIComponent(this.current_input)}`)
+      .then(res=>{
+        if (res.ok){
+          return res.text();
+        }
+        else
+        {
+          console.log('error');
+        }
+      })
+      .then(result=>{this.computed_result=result; console.log("Result " +result);})
+      .catch(error=>{console.log(error)});
     },
   },
 }
@@ -261,6 +298,7 @@ div .buttons {
   background-color: rgb(255, 255, 255); /* Transparent background */
   padding: 34px 15px;
   text-align: left;
+  border-radius: 20px;
 }
 
 .input, .result {
