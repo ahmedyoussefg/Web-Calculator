@@ -2,48 +2,208 @@
   <div class="calculator">
     <div class="screen">
       <div class="input">
-        Ahmed
+        {{ current_input.replaceAll("*","×").replaceAll("/","÷") }}
       </div>
       <div class="result">
-        Ahmed
+        {{ computed_result }}
       </div>
 
     </div>
     <br>
 
     <div class="buttons">
-      <button class="operator">%</button>
-      <button class="function">CE</button>
-      <button class="function">C</button>
+      <button class="operator" @click="handleOperator($event)">%</button>
+      <button class="function" @click="clearScreen">CE</button>
+      <button class="function" @click="clearScreen">C</button>
       <!--Backspace-->
-      <button class="backspace">&#x232B</button> 
-      <button class="inverse"><sup>1</sup>&frasl;<sub>x</sub></button>
-      <button class="square">x<sup>2</sup></button> 
-      <button class="root">&#8730<span style="text-decoration: overline;">x</span></button> 
-      <button class="operator">÷</button> 
-      <button class="number">7</button>
-      <button class="number">8</button>
-      <button class="number">9</button>
-      <button class="number">×</button>
-      <button class="number">4</button>
-      <button class="number">5</button>
-      <button class="number">6</button>
-      <button class="operator">-</button>
-      <button class="number">1</button>
-      <button class="number">2</button>
-      <button class="number">3</button>
-      <button class="operator">+</button>
-      <button class="number"><sup>+</sup>&frasl;<sub>-</sub></button>
-      <button class="number">0</button>
-      <button class="number">.</button>
-      <button class="operator">=</button>
+      <button class="backspace" @click="deleteLast">&#x232B</button> 
+      <button class="inverse" @click="inverse"><sup>1</sup>&frasl;<sub>x</sub></button>
+      <button class="square" @click="square">x<sup>2</sup></button> 
+      <button class="root" @click="sqrt">&#8730<span style="text-decoration: overline;">x</span></button> 
+      <button class="operator" @click="handleOperator($event)">÷</button> 
+      <button class="number" @click ="handleNumberButton($event)">7</button>
+      <button class="number" @click ="handleNumberButton($event)">8</button>
+      <button class="number" @click ="handleNumberButton($event)">9</button>
+      <button class="number" @click ="handleOperator($event)">×</button>
+      <button class="number" @click ="handleNumberButton($event)">4</button>
+      <button class="number" @click ="handleNumberButton($event)">5</button>
+      <button class="number" @click ="handleNumberButton($event)">6</button>
+      <button class="operator" @click="handleOperator($event)">-</button>
+      <button class="number" @click ="handleNumberButton($event)">1</button>
+      <button class="number" @click ="handleNumberButton($event)">2</button>
+      <button class="number" @click ="handleNumberButton($event)">3</button>
+      <button class="operator" @click="handleOperator($event)">+</button>
+      <button class="operatorr" @click="handlePlusMinus"><sup>+</sup>&frasl;<sub>-</sub></button>
+      <button class="number" @click="handleNumberButton($event)">0</button>
+      <button class="number" @click ="handleDecimalClick">.</button>
+      <button class="operator" @click="handleEqualsClick">=</button>
     </div>
   </div>
 </template>
 
 <script>
-export default {
 
+export default {
+  data(){
+    return{
+      current_input:'',
+      computed_result:''
+    };
+  },
+  methods: {
+    clearScreen(){
+      this.current_input='';
+      this.computed_result='';
+    },
+    handleOperator(event){
+      let operator=event.target.textContent;
+      if(operator==='÷')
+        operator ='/';
+      else if(operator ==='×')
+        operator = '*';
+      if(this.current_input==='')
+        return;
+      if(this.current_input==='-'){
+        return;
+      }
+      const last = this.current_input.slice(-1);
+      if (last == '.'){
+        this.current_input+="0"+operator;
+        return;
+      }
+      if(this.isOperator(last)){
+        this.current_input = this.current_input.slice(0, -1) + operator;
+      }
+      else
+      {
+        if (operator==='%'){
+          this.current_input+="/100";
+        }
+        else
+          this.current_input+=operator;
+      }
+    },
+    handleDecimalClick(){
+      if(this.current_input===''){
+        this.current_input+="0.";
+        return;
+      }
+      const last = this.current_input.slice(-1);
+      if(this.isOperator(last)){
+        this.current_input+="0.";
+      }
+      else{
+        this.current_input+=".";
+      }
+    },
+    handleNumberButton(event){
+      const num = event.target.textContent;
+      this.current_input+=num;
+    },
+    sqrt(){
+      if(this.current_input===''){
+        return;
+      }
+      const last = this.current_input.slice(-1);
+      if (this.isOperator(last)){
+        return;
+      }
+      else if(last=='.'){
+        this.current_input+="0^0.5";
+      }
+      else
+      {
+        this.current_input+="^0.5";
+      }
+    },
+    square(){
+      if(this.current_input===''){
+        return;
+      }
+      const last = this.current_input.slice(-1);
+      if (this.isOperator(last)){
+        return;
+      }
+      else if(last=='.'){
+        this.current_input+="0^2";
+      }
+      else
+      {
+        this.current_input+="^2";
+      }
+    },
+    inverse(){
+      if(this.current_input===''){
+        return;
+      }
+      const last = this.current_input.slice(-1);
+      if(this.isOperator(last))
+        return;
+      let myinput=this.current_input;
+      for (let i=myinput.length-1;i>=0;i--){
+        if(this.isOperator(myinput.charAt(i))){
+          let last_str = myinput.slice(0,i+1);
+          last_str+="1/"
+          myinput=myinput.slice(-(myinput.length-i-1))
+          this.current_input=last_str+myinput;
+          return;
+        }
+      }
+      this.current_input="1/"+this.current_input;
+      return;
+    },
+    deleteLast(){
+      if(this.current_input!=''){
+        this.current_input=this.current_input.slice(0,-1);
+      }
+      /**
+       * if last character is not operator, send expression,
+       *  else send without last character
+       */
+    },
+    isOperator(ch){
+      if(ch==='+'||ch=='-'||ch=='/'||ch=='*'){
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    },
+    handleEqualsClick(){
+      // already sent
+    },
+    handlePlusMinus(){
+      if(this.current_input===''){
+        this.current_input+="-";
+        return;
+      }
+      if (this.current_input==='-'){
+        this.current_input='';
+      }
+      let myinput = this.current_input;
+      for (let i=myinput.length-1;i>=0;i--){
+        let curr=myinput.charAt(i);
+        if(this.isOperator(curr)){
+          if(curr==='+'){
+            //myinput[i]='-';
+            this.current_input=myinput.slice(0, i) + "-" + myinput.slice(i+1);
+            return;
+          }
+          else if (curr==='-'){
+           // myinput[i]='+';
+            this.current_input=myinput.slice(0, i) + "+" + myinput.slice(i+1);
+            return;
+          }
+          else
+          {
+            return;
+          }
+        }
+      }
+      this.current_input="-"+this.current_input;
+    },
+  },
 }
 </script>
 
@@ -62,7 +222,7 @@ div .calculator {
   align-items: center;
   height: 80vh;
   width: 53vh;
-  margin-left: 20%; /*was 40% */
+  margin-left: 40%; /*was 40% */
   border: 2px solid black;
   border-radius: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -110,9 +270,11 @@ div .buttons {
 .result {
   color: black;
   font-size: 31px;
+  min-height: 31px;
 }
 .input {
   font-size: 20px;
   color :#626060;
+  min-height: 20px;
 }
 </style>
