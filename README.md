@@ -49,7 +49,7 @@ This document provides a comprehensive guide to the Calculator application. The 
     
     A video demonstration showcasing the Calculator application in action is available. Users can watch the video to understand the functionality and usage.
     
-    [Video Demonstration](https://youtu.be/yourvideolink)
+    [Video Demonstration](https://drive.google.com/file/d/1vgtQQLbwvWqydYhacK4DapmYNx_BylI6/view?usp=drive_link)
     
     ---
     
@@ -57,7 +57,7 @@ This document provides a comprehensive guide to the Calculator application. The 
     
     The source code for the Calculator application is available on GitHub. Developers can access the repository for reference or contribute to its enhancement.
     
-    [GitHub Repository](https://github.com/yourusername/calculator)
+    [GitHub Repository](https://github.com/ahmedyoussefg/Web-Calculator)
     
     ---
     
