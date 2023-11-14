@@ -29,7 +29,9 @@ public class Control {
                 return "E";
             }
             System.out.println(value);
-
+            if (value==null){
+                return "E";
+            }
             if (value.isInfinite() || value.isNaN()){
                 return "E";
             }
