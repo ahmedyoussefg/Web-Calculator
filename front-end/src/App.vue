@@ -1,5 +1,5 @@
 <template>
-  <div class="calculator">
+  <div class="calculator" @keyup="handleKeyPress" ref="calculatorContainer" tabindex="0">
     <div class="screen">
       <div class="input">
         {{ current_input.replaceAll("*","×").replaceAll("/","÷") }}
@@ -16,10 +16,10 @@
       <button class="function" @click="clearScreen">CE</button>
       <button class="function" @click="clearScreen">C</button>
       <!--Backspace-->
-      <button class="backspace" @click="deleteLast">&#x232B</button> 
+      <button class="backspace" @click="deleteLast">&#x232B;</button> 
       <button class="inverse" @click="inverse"><sup>1</sup>&frasl;<sub>x</sub></button>
       <button class="square" @click="square">x<sup>2</sup></button> 
-      <button class="root" @click="sqrt">&#8730<span style="text-decoration: overline;">x</span></button> 
+      <button class="root" @click="sqrt">&#8730;<span style="text-decoration: overline;">x</span></button> 
       <button class="operator" @click="handleOperator($event)">÷</button> 
       <button class="number" @click ="handleNumberButton($event)">7</button>
       <button class="number" @click ="handleNumberButton($event)">8</button>
@@ -33,10 +33,10 @@
       <button class="number" @click ="handleNumberButton($event)">2</button>
       <button class="number" @click ="handleNumberButton($event)">3</button>
       <button class="operator" @click="handleOperator($event)">+</button>
-      <button class="operatorr" @click="handlePlusMinus"><sup>+</sup>&frasl;<sub>-</sub></button>
+      <button class="plusminus" @click="handlePlusMinus"><sup>+</sup>&frasl;<sub>-</sub></button>
       <button class="number" @click="handleNumberButton($event)">0</button>
       <button class="number" @click ="handleDecimalClick">.</button>
-      <button class="operator" @click="handleEqualsClick">=</button>
+      <button class="equal" @click="handleEqualsClick">=</button>
     </div>
   </div>
 </template>
@@ -191,8 +191,11 @@ export default {
     },
     handleEqualsClick(){
       // already sent
-      if(this.isOperator(this.current_input.slice(-1)))
+      if(this.isOperator(this.current_input.slice(-1))){
         this.computed_result='E';
+        return;
+      }
+      this.current_input=this.computed_result;
     },
     handlePlusMinus(){
       if(this.current_input===''){
@@ -217,6 +220,7 @@ export default {
           }
           else
           {
+            continue;
           }
           this.evaluateExpression();
           return;
@@ -239,6 +243,38 @@ export default {
       })
       .then(result=>{this.computed_result=result; console.log("Result " +result);})
       .catch(error=>{console.log(error)});
+    },
+    handleKeyPress(event) {
+      // Get the key that was pressed
+      const key = event.key;
+      this.$refs.calculatorContainer.focus();
+      // Handle numeric keys
+      if (/[0-9]/.test(key)) {
+        this.handleNumberButton({ target: { textContent: key } });
+      }
+
+      // Handle operator keys
+      if (/[+\-*/^]/.test(key)) {
+        this.handleOperator({ target: { textContent: key } });
+      }
+
+      // Handle decimal point
+      if (key === '.') {
+        this.handleDecimalClick();
+      }
+
+      // Handle equals key
+      if (key === 'Enter') {
+        this.handleEqualsClick();
+      }
+
+      // Handle backspace key
+      if (key === 'Backspace') {
+        this.deleteLast();
+      }
+      if (key === 'Escape'){
+        this.clearScreen();
+      }
     },
   },
 }
@@ -289,7 +325,7 @@ div .buttons {
 .calculator .buttons button:hover{
   background-color: #787878;
 }
-.calculator .buttons button:active{
+.calculator .buttons button:active{ 
   background-color: #333333;
 }
 
@@ -308,11 +344,14 @@ div .buttons {
 .result {
   color: black;
   font-size: 31px;
-  min-height: 31px;
+  min-height: 35px;
 }
 .input {
   font-size: 20px;
   color :#626060;
-  min-height: 20px;
+  min-height: 24px;
+}
+.calculator:focus{
+  outline: none;
 }
 </style>
