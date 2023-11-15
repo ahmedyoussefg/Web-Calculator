@@ -288,18 +288,17 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 40px;
+  margin-right: 30%;
+  margin-left:40%;
 }
 
 div .calculator {
   background-color: #444178;
   align-items: center;
-  height: 80vh;
-  width: 53vh;
-  margin-left: 40%; /*was 40% */
   border: 2px solid black;
   border-radius: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  position: absolute;
+  display: absolute;
   padding: 50px 20px 25px 20px; /*top right bottom left */
 }
 
@@ -335,6 +334,7 @@ div .buttons {
   padding: 34px 15px;
   text-align: left;
   border-radius: 20px;
+  word-wrap: break-word;
 }
 
 .input, .result {
